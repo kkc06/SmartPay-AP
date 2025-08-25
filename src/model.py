@@ -61,11 +61,11 @@ def train_eval(df: pd.DataFrame, test_size: float = 0.2, random_state: int = 42
     # Reduce false positives with better regularization and calibration
     clf = LogisticRegression(
         max_iter=2000,
-        class_weight={0: 1, 1: 2},  # Less aggressive than "balanced"
+        class_weight={0: 1, 1: 2},
         random_state=random_state,
-        C=10.0,  # Increased regularization to reduce overfitting
+        C=10.0,
         solver='liblinear',
-        penalty='l1'  # L1 regularization for feature selection
+        penalty='l1'
     )
     clf.fit(X_train, y_train)
     

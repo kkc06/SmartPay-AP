@@ -1,4 +1,12 @@
+
 from __future__ import annotations
+def load_invoices(data_dir: str = "./data"):
+    invoices, _, _ = load_data(data_dir)
+    return invoices
+
+def load_po_grn(data_dir: str = "./data"):
+    _, po_grn, _ = load_data(data_dir)
+    return po_grn
 import pandas as pd
 from dateutil import parser
 from typing import Tuple

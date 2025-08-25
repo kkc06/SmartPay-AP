@@ -33,7 +33,7 @@ def build_links(inv_agg: pd.DataFrame, po: pd.DataFrame) -> pd.DataFrame:
     missing_po_mask = np.random.random(len(df)) < 0.15
     df.loc[missing_po_mask, ["po_number", "po_date", "vendor_name_po", "po_total", "grn_number", "grn_date"]] = None
     
-    print(f"🔗 Enhanced linking results:")
+    print(f"Enhanced linking results:")
     successful_links = df['po_number'].notna().sum()
     print(f"   - Successful links: {successful_links}/{len(df)} ({successful_links/len(df)*100:.1f}%)")
     print(f"   - Missing POs: {len(df) - successful_links} ({(len(df) - successful_links)/len(df)*100:.1f}%)")
@@ -184,7 +184,7 @@ def attach_labels(df_features: pd.DataFrame, mismatches: pd.DataFrame) -> pd.Dat
                                            replace=False)
     df.loc[df['invoice_id'].isin(date_issue_candidates), 'invoice_too_late'] = 1
     
-    print(f"✅ Applied mismatch patterns:")
+    print(f"Applied mismatch patterns:")
     print(f"   - Missing PO cases: {len(missing_po_invoices)}")
     print(f"   - Price variances: {len(price_variance_cases)}")
     print(f"   - Vendor mismatches: {len(vendor_mismatch_candidates)}")

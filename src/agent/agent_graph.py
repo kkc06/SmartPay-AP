@@ -5,11 +5,10 @@ import json, os
 import sys
 from pathlib import Path
 
-# Add the src directory to the path so we can import from scorer
 src_dir = Path(__file__).parent.parent
 sys.path.insert(0, str(src_dir))
 
-from scorer import score_invoice  # NEW: real scorer using D2 model
+from .scorer import score_invoice
 
 @dataclass
 class MatchResult:
@@ -39,15 +38,15 @@ def call_matcher(invoice_id: str, po_number: str, data_dir: str, model_path: str
     if has_material_issues:
         status = "mismatch"
         confidence = mismatch_prob
-    elif mismatch_prob >= 0.8:  # Higher threshold for mismatch (was 0.7)
+    elif mismatch_prob >= 0.8:
         status = "mismatch"
         confidence = mismatch_prob
-    elif mismatch_prob >= 0.6:  # Higher threshold for partial (was 0.3)
+    elif mismatch_prob >= 0.6:
         status = "partial"
         confidence = mismatch_prob
     else:  # Lower mismatch probability - treat as match
         status = "match"
-        confidence = 1.0 - mismatch_prob  # Convert to match confidence
+        confidence = 1.0 - mismatch_prob 
     
     explanation = build_explanation(facts, status, confidence)
     return MatchResult(status=status, confidence=confidence, facts=facts, explanation=explanation)
@@ -63,7 +62,6 @@ def build_explanation(facts: Dict[str, Any], status: str, confidence: float) -> 
     if not facts.get("has_grn", True):
         issues.append("No GRN found for this PO")
     
-    # Add timing concerns if significant
     days_delta = abs(facts.get("days_delta", 0))
     if days_delta > 30:
         issues.append(f"Invoice timing concern: {days_delta} days from GRN")
@@ -81,7 +79,7 @@ def build_explanation(facts: Dict[str, Any], status: str, confidence: float) -> 
         else:
             return f"Clean match with no material differences. Confidence: {confidence:.2f}"
 
-# ---- LLM draft email tool (pseudo) ----
+# LLM draft email tool
 
 def draft_dispute_email(vendor_name: str, invoice_id: str, po_number: str, facts: Dict[str, Any], match_status: str) -> str:
     """Generate context-aware dispute email based on actual issues found."""
@@ -218,7 +216,7 @@ def email_node(context: Dict[str, Any]) -> Dict[str, Any]:
                 t["match_result"]["status"]
             )
         else:
-            t["email_draft"] = None  # No email needed for clean matches
+            t["email_draft"] = None
     return {"tasks": context["tasks"]}
 
 def approval_gate(context: Dict[str, Any]) -> Dict[str, Any]:
@@ -239,7 +237,6 @@ def approval_gate(context: Dict[str, Any]) -> Dict[str, Any]:
         "approval_required": emails_needed > 0 or mismatches > 0
     }
     
-    # STOP here for human approval in UI/workflow engine
     context["status"] = "APPROVAL_AWAITING" if context["summary"]["approval_required"] else "COMPLETED"
     return context
 

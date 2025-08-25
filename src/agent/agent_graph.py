@@ -8,7 +8,7 @@ from pathlib import Path
 src_dir = Path(__file__).parent.parent
 sys.path.insert(0, str(src_dir))
 
-from .scorer import score_invoice
+from scorer import score_invoice
 
 @dataclass
 class MatchResult:
